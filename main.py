@@ -33,3 +33,17 @@ class AbstractSNN(ABC):
     @abstractmethod
     def add_layer(self, layer: AbstractLayer) -> None:
         pass
+    
+    
+class Neuron:
+    def __init__(self) -> None:
+        input_links: list[Link] = []
+        output_links: list[Link] = []
+    
+
+class Link:
+    def __init__(self) -> None:
+        input_obj: Neuron = None
+        output_obj: Neuron | [Link, int] = None
+    
+    
