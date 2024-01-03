@@ -43,6 +43,7 @@ class Link:
         self.T_links: list[list[Link]] = []
     
     def step(self) -> None:
+        '''Смещаем все спайки вправо по аксону, на 1'''
         self.link.insert(0, False)
         self.link.pop()
         
