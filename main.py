@@ -47,7 +47,7 @@ class Link:
         self.link.insert(0, False)
         self.link.pop()
         
-        print(len(self.T_links))
+        #print(len(self.T_links))
         '''Проверяем не пуст ли список тормозных аксонов'''
         if len(self.T_links) > 0:
             
@@ -68,8 +68,12 @@ class Link:
             
         
     
-    def print(self, prefix: str = ''):
-        print(f'{prefix}{self.link}')
+    def print(self, prefix: str = '', type: str = 'None'):
+        if type in ['num' , 'number']:
+            num_link = [1 if b else 0 for b in self.link]
+            print(f'{prefix}{num_link}')
+        else:
+            print(f'{prefix}{self.link}')
         
     def set_input_obj(self, input_obj: 'Neuron' = None) -> None:
         self.input_obj = input_obj
@@ -77,16 +81,26 @@ class Link:
     def set_length(self, length: int = 1) -> None:
         self.link = [False] * length
         
-    def set_T_link(self, T_link: 'Link' = None, position: int = 0):
-        if position < len(self.link):
-            if len(self.T_links) == 0:
-                self.T_links = [[]]*len(self.link)
-            print(self.T_links)
-            if len(self.T_links[position]) == 0:
-                self.T_links[position] = [T_link]
+    def set_T_link(self, T_link: 'Link' = None, position: int | list[int] = 0):
+        
+        '''Локальная функция установки одной тормозной связи'''
+        def set_one_T_link(self, T_link: 'Link' = None, position: int = 0):
+            if position < len(self.link):
+                if len(self.T_links) == 0:
+                    self.T_links = [[]]*len(self.link)
                 print(self.T_links)
-            else:
-                self.T_links[position].append(T_link)
+                if len(self.T_links[position]) == 0:
+                    self.T_links[position] = [T_link]
+                    print(self.T_links)
+                else:
+                    self.T_links[position].append(T_link)
+        
+        if isinstance(position, int):
+            set_one_T_link(self, T_link, position)
+        elif isinstance(position, list) and all(isinstance(num, int) for num in position):
+            for pos in position:
+                set_one_T_link(self, T_link, pos)
+            
     
     def get_last_value(self) -> bool:
         return self.link[len(self.link)-1]
@@ -94,8 +108,7 @@ class Link:
     
 class Neuron:
     def __init__(self) -> None:
-        input_links: list[Link] = []
-        output_links: list[Link] = []
+        self.input_links: list[Link] = []
     
     def app_input_link(self, link: Link) -> None:
         self.input_links.append(link)
@@ -104,20 +117,50 @@ class Neuron:
 
 link = Link(length=7)
 T_link = Link(length=7)
+T_link2 = Link(length=7)
 
-link.link.insert(2, True)
-T_link.link.insert(2, True)
 
-link.print(prefix='link   = ')
-T_link.print(prefix='T-link = ')
+link.link[0] = True
+link.link[1] = True
+link.link[2] = True
+link.link[3] = True
+link.link[4] = True
+
+T_link.link[5] = True
+T_link2.link[5] = True
+
+link.print(prefix='link    = ')
+T_link.print(prefix='T-link  = ')
+T_link2.print(prefix='T-link2 = ')
+
+
 
 link.set_T_link(T_link=T_link, position=2)
-link.set_T_link(T_link=T_link, position=5)
+link.set_T_link(T_link=T_link2, position=[2,5])
 
-link.step()
-T_link.step()
 
-link.print(prefix='link   = ')
-T_link.print(prefix='T-link = ')
+link.print(prefix='link    = ', type='num')
+T_link.print(prefix='T-link  = ', type='num')
+T_link2.print(prefix='T-link2 = ', type='num')
+
+k: int = 0
+while True:
+    print(f'   step {k}')
+    
+    link.step()
+    T_link.step()
+    T_link2.step()
+    
+    link.print(prefix='link    = ', type='num')
+    T_link.print(prefix='T-link  = ', type='num')
+    T_link2.print(prefix='T-link2 = ', type='num')
+    
+    time.sleep(1)
+    k += 1
+    if k > 10: break
+
+
+
+
     
     
