@@ -43,8 +43,13 @@ class Link:
         self.T_links: list[list[Link]] = []
     
     def step(self) -> None:
-        '''Смещаем все спайки вправо по аксону, на 1'''
-        self.link.insert(0, False)
+        '''Получаем состояние входного нейрона'''  
+        state_neuron = False
+        if self.input_obj != None:
+            state_neuron = self.input_obj.get_state()
+            
+        '''Смещаем все спайки вправо по аксону, на 1'''    
+        self.link.insert(0, state_neuron)
         self.link.pop()
         
         #print(len(self.T_links))
@@ -65,10 +70,8 @@ class Link:
                             в точке крепления'''
                             self.link[i] = False
                 
-            
-        
     
-    def print(self, prefix: str = '', type: str = 'None'):
+    def print(self, prefix: str = '', type: str = 'None') -> None:
         if type in ['num' , 'number']:
             num_link = [1 if b else 0 for b in self.link]
             print(f'{prefix}{num_link}')
@@ -81,10 +84,10 @@ class Link:
     def set_length(self, length: int = 1) -> None:
         self.link = [False] * length
         
-    def set_T_link(self, T_link: 'Link' = None, position: int | list[int] = 0):
+    def set_T_link(self, T_link: 'Link' = None, position: int | list[int] = 0) -> None:
         
         '''Локальная функция установки одной тормозной связи'''
-        def set_one_T_link(self, T_link: 'Link' = None, position: int = 0):
+        def set_one_T_link(self, T_link: 'Link' = None, position: int = 0) -> None:
             if position < len(self.link):
                 if len(self.T_links) == 0:
                     self.T_links = [[]]*len(self.link)
@@ -109,9 +112,21 @@ class Link:
 class Neuron:
     def __init__(self) -> None:
         self.input_links: list[Link] = []
+        self.state: bool = False
     
-    def app_input_link(self, link: Link) -> None:
+    def add_input_link(self, link: Link) -> None:
         self.input_links.append(link)
+        
+    def step(self) -> None:
+        sig_arr = [link.get_last_value() for link in self.input_links]
+        if True in sig_arr:
+            self.state = True
+        else:
+            self.state = False
+            
+    def get_state(self) -> bool:
+        return self.state
+        
  
     
 
@@ -139,8 +154,8 @@ link.set_T_link(T_link=T_link, position=2)
 link.set_T_link(T_link=T_link2, position=[2,5])
 
 
-link.print(prefix='link    = ', type='num')
-T_link.print(prefix='T-link  = ', type='num')
+link.print(   prefix='link    = ', type='num')
+T_link.print( prefix='T-link  = ', type='num')
 T_link2.print(prefix='T-link2 = ', type='num')
 
 k: int = 0
