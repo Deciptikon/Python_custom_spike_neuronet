@@ -110,8 +110,8 @@ class Link:
         
     
 class Neuron:
-    def __init__(self) -> None:
-        self.input_links: list[Link] = []
+    def __init__(self, input_links: list[Link] = []) -> None:
+        self.input_links = input_links
         self.state: bool = False
     
     def add_input_link(self, link: Link) -> None:
@@ -129,50 +129,34 @@ class Neuron:
         
  
     
+links: list[Link] = []
+links.append(Link(length=3))
+links.append(Link(length=6))
 
-link = Link(length=7)
-T_link = Link(length=7)
-T_link2 = Link(length=7)
+neurons: list[Neuron] = []
+neurons.append(Neuron())
 
+neurons[0].add_input_link(links[0])
+links[0].set_input_obj(neurons[0])
+neurons[0].add_input_link(links[1])
+links[1].set_input_obj(neurons[0])
 
-link.link[0] = True
-link.link[1] = True
-link.link[2] = True
-link.link[3] = True
-link.link[4] = True
-
-T_link.link[5] = True
-T_link2.link[5] = True
-
-link.print(prefix='link    = ')
-T_link.print(prefix='T-link  = ')
-T_link2.print(prefix='T-link2 = ')
-
-
-
-link.set_T_link(T_link=T_link, position=2)
-link.set_T_link(T_link=T_link2, position=[2,5])
-
-
-link.print(   prefix='link    = ', type='num')
-T_link.print( prefix='T-link  = ', type='num')
-T_link2.print(prefix='T-link2 = ', type='num')
+neurons[0].state = True
 
 k: int = 0
 while True:
     print(f'   step {k}')
     
-    link.step()
-    T_link.step()
-    T_link2.step()
+    for link in links:
+        link.step()
+        link.print(type='num')
     
-    link.print(prefix='link    = ', type='num')
-    T_link.print(prefix='T-link  = ', type='num')
-    T_link2.print(prefix='T-link2 = ', type='num')
+    for neuro in neurons:
+        neuro.step()
     
     time.sleep(1)
     k += 1
-    if k > 10: break
+    if k > 20: break
 
 
 
